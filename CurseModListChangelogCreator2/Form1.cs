@@ -64,16 +64,129 @@ namespace CurseModListChangelogCreator2
 
         private void btnCompare_Click(object sender, EventArgs e)
         {
+            ClearLog();
+
             string oldPath = dlgOldMod.FileName;
             string newPath = dlgNewMod.FileName;
 
+            //dont backup if the file is being modded.
+            BackupTheFile(newPath);
 
             ModPackInformation oldVersionInformation = GetModPackData(oldPath);
             ModPackInformation newVersionInformation = GetModPackData(newPath);
 
             txtResult.Text = ComparePacks(oldVersionInformation, newVersionInformation);
             txtNewPack.Text = newVersionInformation.ModListHtml;
-            txtOldPack.Text = oldVersionInformation.ModListHtml;
+
+            
+            if (cbRemoveCommonOverrides.Checked)
+            {
+                RemoveCommonAutoLoadedMods(newPath);
+            }
+            if (cbAddChangeLogToNew.Checked)
+            {
+                AddTextFileToZip(newPath, "changelog.html", txtResult.Text);
+            }
+
+        }
+
+        private void RemoveCommonAutoLoadedMods(string path)
+        {
+           // List<string> itemsToRemove = new List<string>();
+            using (ZipFile zf = new ZipFile(path))
+            {
+                zf.BeginUpdate();
+                foreach (ZipEntry item in zf)
+                {
+                    if (ShouldDelete(item))
+                    {
+                     //   itemsToRemove.Add(item.Name);
+                        zf.Delete(item);
+                     
+                    }
+                    
+                }
+                zf.CommitUpdate();
+            }
+            //foreach (string item in itemsToRemove)
+            //{
+            //    using (ZipFile zf = new ZipFile(path))
+            //    {
+                   
+                    
+                    
+            //    }
+            //}
+        }
+
+        private bool ShouldDelete(ZipEntry item)
+        {
+            bool result = false;
+            if (item.Name.StartsWith("overrides/mods") && item.IsFile)
+            {
+                result = true;
+            }
+            return result;
+        }
+
+        private void BackupTheFile(string path)
+        {
+            if (cbDoBackup.Checked && (cbAddChangeLogToNew.Checked || cbRemoveCommonOverrides.Checked))
+            {
+                DoBackup(path);
+            }
+            else if (cbDoBackup.Checked)
+            {
+                Log($"The file '{path}' is not being modified so there is no reason to back it up.");
+            }
+            else
+            {
+                Log("The Backup option was not selected.");
+            }
+        }
+
+        private void AddTextFileToZip(string path, string fileName, string contents)
+        {
+            using (ZipFile zf = new ZipFile(path))
+            {
+                zf.BeginUpdate();
+                zf.Add(new StringStaticDataSource(contents), fileName);
+                zf.IsStreamOwner = false;
+                zf.CommitUpdate();
+                zf.Close();
+            }
+        }
+
+        private void ClearLog()
+        {
+            txtProcessLog.Text = string.Empty;
+        }
+        private void Log(string message)
+        {
+            txtProcessLog.AppendText(message + Environment.NewLine);
+        }
+        private void DoBackup(string source)
+        {
+            string extension = "bak";
+            string newPath = Path.ChangeExtension(source, extension);
+            if (File.Exists(newPath))
+            {
+                string firstPart = newPath.Replace("." + extension, "");
+                for (int i = 1; i < 10; i++)
+                {
+                    newPath = $"{firstPart}({i.ToString()}).{extension}";
+                    if (!File.Exists(newPath))
+                    {
+                        break;
+                    }
+                }
+                if (File.Exists(newPath))
+                {
+                    throw new IOException($"'{newPath}' already exists.  Please remove some old backups.");
+                }
+            }
+            File.Copy(source, newPath);
+            Log($"File {source} backed up to {newPath}");
         }
 
         private ModPackInformation GetModPackData(string path)
@@ -105,6 +218,7 @@ namespace CurseModListChangelogCreator2
                         }
                     }
                 }
+                zf.Close();
             }
             return result;
         }
@@ -118,11 +232,11 @@ namespace CurseModListChangelogCreator2
             foreach (var item in root.Elements("li"))
             {
                 //this should be an li
-                HtmlNode node=item.ChildNodes.FirstOrDefault();
+                HtmlNode node = item.ChildNodes.FirstOrDefault();
                 string name = node.InnerHtml;
                 string url = node.GetAttributeValue("href", string.Empty);
                 string projectid = url;
-                if(url.StartsWith(Resources.CurseProjectUrl))
+                if (url.StartsWith(Resources.CurseProjectUrl))
                 {
                     projectid = url.Remove(0, Resources.CurseProjectUrl.Length);
                 }
@@ -158,7 +272,7 @@ namespace CurseModListChangelogCreator2
         private ModVersion GetMod(ModPackInformation info, string modId)
         {
             ModVersion result = info.Mods.FirstOrDefault(m => m.ModProjectId.Equals(modId, StringComparison.InvariantCultureIgnoreCase));
-            if(result==null)
+            if (result == null)
             {
                 result = new ModVersion { ModProjectId = modId };
                 info.Mods.Add(result);
@@ -185,37 +299,39 @@ namespace CurseModListChangelogCreator2
         private string ComparePacks(ModPackInformation oldVersionInformation, ModPackInformation newVersionInformation)
         {
             StringBuilder result = new StringBuilder();
-            result.AppendLine($"Modpack version <a href='{Resources.CurseProjectUrl}{newVersionInformation.ProjectId}'>{newVersionInformation.ModPackVersion}</a></br>");
+            result.AppendLine($"<p>Modpack version <a href='{Resources.CurseProjectUrl}{newVersionInformation.ProjectId}'>{newVersionInformation.ModPackVersion}</a><br/>");
             result.AppendLine($"Modpack Author {newVersionInformation.ModPackAuthor}</br>");
             if (!((string)oldVersionInformation.MinecraftVersion)
                 .Equals((string)newVersionInformation.MinecraftVersion, StringComparison.InvariantCultureIgnoreCase))
             {
-                result.AppendLine($"Minecraft version updated to {newVersionInformation.MinecraftVersion}");
+                result.AppendLine($"Minecraft version updated to {newVersionInformation.MinecraftVersion}<br/>");
             }
 
             if (!((string)oldVersionInformation.Loader)
                .Equals((string)newVersionInformation.Loader, StringComparison.InvariantCultureIgnoreCase))
             {
-                result.AppendLine($"Loader updated to {newVersionInformation.Loader}");
+                result.AppendLine($"Loader updated to {newVersionInformation.Loader}<br/>");
             }
+            result.AppendLine($"</p>");
             IList<ModVersion> removedMods = GetRemovedMods(oldVersionInformation.Mods, newVersionInformation.Mods);
             BuildList("Removed", removedMods, result);
             IList<ModVersion> addedMods = GetAddedMods(oldVersionInformation.Mods, newVersionInformation.Mods);
             BuildList("Added", addedMods, result);
             IList<ModVersion> updatedMods = GetUpdatedMods(oldVersionInformation.Mods, newVersionInformation.Mods);
             BuildList("Updated", updatedMods, result);
+            result.AppendLine($"<p>Change log generated the Curse Mod List Change Log Creator by {Resources.Authors}<br/><a href=\"{Resources.GitHubUrlForTheProject}\">Get it from Github!</a></p>");
             return result.ToString();
         }
 
         private void BuildList(string title, IList<ModVersion> mods, StringBuilder result)
         {
-            result.AppendLine($"<strong>{title}</strong>");
+            result.AppendLine($"<p><strong>{title}</strong>");
             result.AppendLine("<ul>");
             foreach (var mod in mods)
             {
-                result.AppendLine($"<a href=\"{mod.Url}\">{mod.Name}</a>");
+                result.AppendLine($"<li><a href=\"{mod.Url}\">{mod.Name}</a></li>");
             }
-            result.AppendLine("</ul>");
+            result.AppendLine("</ul></p>");
         }
 
         private IList<ModVersion> GetUpdatedMods(List<ModVersion> PreviousModVersion, List<ModVersion> newModVersions)
@@ -240,5 +356,6 @@ namespace CurseModListChangelogCreator2
             IEnumerable<string> modIds = expectedMods.Select(p => p.ModProjectId);
             return baseListOfMods.Where(m => !modIds.Contains(m.ModProjectId)).ToList();
         }
+
     }
 }

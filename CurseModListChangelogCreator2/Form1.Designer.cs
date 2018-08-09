@@ -35,12 +35,15 @@
             this.btnOld = new System.Windows.Forms.Button();
             this.btnNew = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.txtOldPack = new System.Windows.Forms.TextBox();
+            this.txtProcessLog = new System.Windows.Forms.TextBox();
             this.txtNewPack = new System.Windows.Forms.TextBox();
             this.btnCompare = new System.Windows.Forms.Button();
             this.txtResult = new System.Windows.Forms.TextBox();
             this.dlgOldMod = new System.Windows.Forms.OpenFileDialog();
             this.dlgNewMod = new System.Windows.Forms.OpenFileDialog();
+            this.cbRemoveCommonOverrides = new System.Windows.Forms.CheckBox();
+            this.cbDoBackup = new System.Windows.Forms.CheckBox();
+            this.cbAddChangeLogToNew = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -123,7 +126,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.txtOldPack);
+            this.splitContainer1.Panel1.Controls.Add(this.txtProcessLog);
             // 
             // splitContainer1.Panel2
             // 
@@ -132,17 +135,17 @@
             this.splitContainer1.SplitterDistance = 236;
             this.splitContainer1.TabIndex = 6;
             // 
-            // txtOldPack
+            // txtProcessLog
             // 
-            this.txtOldPack.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.txtProcessLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtOldPack.Location = new System.Drawing.Point(4, 4);
-            this.txtOldPack.Multiline = true;
-            this.txtOldPack.Name = "txtOldPack";
-            this.txtOldPack.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtOldPack.Size = new System.Drawing.Size(229, 356);
-            this.txtOldPack.TabIndex = 0;
+            this.txtProcessLog.Location = new System.Drawing.Point(4, 4);
+            this.txtProcessLog.Multiline = true;
+            this.txtProcessLog.Name = "txtProcessLog";
+            this.txtProcessLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtProcessLog.Size = new System.Drawing.Size(229, 356);
+            this.txtProcessLog.TabIndex = 0;
             // 
             // txtNewPack
             // 
@@ -182,12 +185,51 @@
             // 
             this.dlgNewMod.FileName = "openFileDialog2";
             // 
+            // cbRemoveCommonOverrides
+            // 
+            this.cbRemoveCommonOverrides.AutoSize = true;
+            this.cbRemoveCommonOverrides.Checked = true;
+            this.cbRemoveCommonOverrides.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbRemoveCommonOverrides.Location = new System.Drawing.Point(436, 63);
+            this.cbRemoveCommonOverrides.Name = "cbRemoveCommonOverrides";
+            this.cbRemoveCommonOverrides.Size = new System.Drawing.Size(202, 17);
+            this.cbRemoveCommonOverrides.TabIndex = 9;
+            this.cbRemoveCommonOverrides.Text = "Remove Common overrides from new";
+            this.cbRemoveCommonOverrides.UseVisualStyleBackColor = true;
+            // 
+            // cbDoBackup
+            // 
+            this.cbDoBackup.AutoSize = true;
+            this.cbDoBackup.Checked = true;
+            this.cbDoBackup.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbDoBackup.Location = new System.Drawing.Point(9, 63);
+            this.cbDoBackup.Name = "cbDoBackup";
+            this.cbDoBackup.Size = new System.Drawing.Size(105, 17);
+            this.cbDoBackup.TabIndex = 10;
+            this.cbDoBackup.Text = "Backup new first";
+            this.cbDoBackup.UseVisualStyleBackColor = true;
+            // 
+            // cbAddChangeLogToNew
+            // 
+            this.cbAddChangeLogToNew.AutoSize = true;
+            this.cbAddChangeLogToNew.Checked = true;
+            this.cbAddChangeLogToNew.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbAddChangeLogToNew.Location = new System.Drawing.Point(120, 63);
+            this.cbAddChangeLogToNew.Name = "cbAddChangeLogToNew";
+            this.cbAddChangeLogToNew.Size = new System.Drawing.Size(141, 17);
+            this.cbAddChangeLogToNew.TabIndex = 11;
+            this.cbAddChangeLogToNew.Text = "Add Change Log to new";
+            this.cbAddChangeLogToNew.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(724, 580);
+            this.Controls.Add(this.cbAddChangeLogToNew);
+            this.Controls.Add(this.cbDoBackup);
+            this.Controls.Add(this.cbRemoveCommonOverrides);
             this.Controls.Add(this.txtResult);
             this.Controls.Add(this.btnCompare);
             this.Controls.Add(this.splitContainer1);
@@ -220,12 +262,15 @@
         private System.Windows.Forms.Button btnOld;
         private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.TextBox txtOldPack;
+        private System.Windows.Forms.TextBox txtProcessLog;
         private System.Windows.Forms.TextBox txtNewPack;
         private System.Windows.Forms.Button btnCompare;
         private System.Windows.Forms.TextBox txtResult;
         private System.Windows.Forms.OpenFileDialog dlgOldMod;
         private System.Windows.Forms.OpenFileDialog dlgNewMod;
+        private System.Windows.Forms.CheckBox cbRemoveCommonOverrides;
+        private System.Windows.Forms.CheckBox cbDoBackup;
+        private System.Windows.Forms.CheckBox cbAddChangeLogToNew;
     }
 }
 

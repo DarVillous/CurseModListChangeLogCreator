@@ -61,11 +61,29 @@ namespace CurseModListChangelogCreator2.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dar Villous.
+        /// </summary>
+        internal static string Authors {
+            get {
+                return ResourceManager.GetString("Authors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://minecraft.curseforge.com/mc-mods/.
         /// </summary>
         internal static string CurseProjectUrl {
             get {
                 return ResourceManager.GetString("CurseProjectUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/DarVillous/CurseModListChangeLogCreator.
+        /// </summary>
+        internal static string GitHubUrlForTheProject {
+            get {
+                return ResourceManager.GetString("GitHubUrlForTheProject", resourceCulture);
             }
         }
     }
